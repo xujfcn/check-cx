@@ -29,7 +29,7 @@ export async function GET() {
 
     const elapsed = Date.now() - startTime;
     const succeeded = results.filter(
-      (r) => r.status === "ok" || r.status === "degraded"
+      (r) => r.status === "operational" || r.status === "degraded"
     ).length;
     const failed = results.length - succeeded;
 
