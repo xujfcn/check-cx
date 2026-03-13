@@ -13,8 +13,8 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const startTime = Date.now();
   try {
-    // 直接加载配置并执行检测，不走 leadership
-    const configs = await loadProviderConfigsFromDB();
+    // 直接加载配置并执行检测，不走 leadership，强制刷新缓存
+    const configs = await loadProviderConfigsFromDB({ forceRefresh: true });
 
     if (configs.length === 0) {
       return NextResponse.json({
