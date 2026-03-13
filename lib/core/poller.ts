@@ -87,7 +87,7 @@ function logFailedResultsByGroup(results: CheckResult[]): void {
 /**
  * 执行一次轮询检查
  */
-async function tick() {
+export async function tick() {
   try {
     await ensurePollerLeadership();
   } catch (error) {
@@ -130,8 +130,9 @@ async function tick() {
   }
 }
 
-// 自动初始化轮询器
-if (!getPollerTimer()) {
+// Vercel serverless: 不使用 setInterval，由 Vercel Cron (/api/cron) 触发 tick()
+// 非 Vercel 环境仍可使用 setInterval 自动轮询
+if (!process.env.VERCEL && !getPollerTimer()) {
   const firstCheckAt = new Date(Date.now() + POLL_INTERVAL_MS).toISOString();
   console.log(
     `[check-cx] 初始化后台轮询器，interval=${POLL_INTERVAL_MS}ms，首次检测预计 ${firstCheckAt}`
@@ -146,4 +147,6 @@ if (!getPollerTimer()) {
 
   // 启动官方状态轮询器
   startOfficialStatusPoller();
+} else if (process.env.VERCEL) {
+  console.log("[check-cx] Vercel 模式：轮询由 /api/cron 触发");
 }
